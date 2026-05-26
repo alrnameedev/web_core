@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${JetBrains.variable}  antialiased mx-auto max-w-173 overflow-x-hidden md:overflow-x-visible px-6 py-12 sm:py-32 md:py-16`}
+      className={`${JetBrains.variable}  antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
