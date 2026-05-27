@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const JetBrains = JetBrains_Mono({
   variable: "--font-JetBrains_Mono",
@@ -22,7 +25,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${JetBrains.variable}  antialiased`}
+      className={cn("antialiased", JetBrains.variable, "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

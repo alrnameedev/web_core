@@ -1,91 +1,104 @@
 "use client";
+import Link from "next/link";
+import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+const NAV_LINKS: any[] = [
+  // { label: "About", href: "/about" },
+  // { label: "Features", href: "/features" },
+];
 
 const Navbar = () => {
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
-  const [isHambergOn, setIsHambergOn] = useState(false);
+  // Close menu on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      const nav = document.getElementById("main-nav");
+      if (nav && !nav.contains(e.target as Node)) setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isOpen]);
 
   return (
-    <nav className="fixed w-screen my-3 md:px-56 px-8 z-40">
-      <div className="bg-white flex justify-between items-center w-full backdrop:blur-2xl px-8 h-[50px] rounded-lg outline outline-1 outline-gray-200">
-        <div className="flex gap-7 items-center" role="button">
-          <h2 className="text-xl text-[#737373] hover:text-[#0a0a0a] cursor-pointer transition-all transition-duration-500">
-            Alrnamee
-          </h2>
-        </div>
-        <div className="hidden md:flex gap-x-7 text-[#737373] text-mine">
-          <button className="cursor-pointer hover:text-[#0a0a0a] transition-all transition-duration-250">
-            About
-          </button>
-          <button className="cursor-pointer hover:text-[#0a0a0a] transition-all transition-duration-250">
-            Features
-          </button>
-          <button
-            onClick={() => router.push("/login")}
-            className="cursor-pointer hover:text-[#0a0a0a] transition-all transition-duration-250"
-          >
-            Log In
-          </button>
-        </div>
-        <div className="md:hidden">
-          {!isHambergOn ? (
-            <svg
-              className="cursor-pointer"
-              onClick={() => setIsHambergOn(true)}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              width="1.5em"
-              height="1.5em"
+    <nav
+      id="main-nav"
+      className="fixed top-0 left-0 right-0 z-10 mx-3 mt-3 md:mx-56"
+    >
+      <div className="bg-white/90 backdrop-blur-md border border-gray-200 rounded-lg px-6 h-12 flex justify-between items-center">
+        <h2 className="text-[17px] text-neutral-500 hover:text-neutral-900 transition-colors duration-300 hover:cursor-default!">
+          Alrnamee
+        </h2>
+
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-6">
+          {NAV_LINKS.map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`text-sm transition-colors duration-200 ${
+                pathname === href
+                  ? "text-neutral-900"
+                  : "text-neutral-500 hover:text-neutral-900"
+              }`}
             >
-              <line x1="4" x2="20" y1="12" y2="12"></line>
-              <line x1="4" x2="20" y1="6" y2="6"></line>
-              <line x1="4" x2="20" y1="18" y2="18"></line>
-            </svg>
-          ) : (
-            <svg
-              onClick={() => setIsHambergOn(false)}
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="cursor-pointer lucide lucide-x mt-1"
-            >
-              <path d="M18 6 6 18"></path>
-              <path d="m6 6 12 12"></path>
-            </svg>
-          )}
+              {label}
+            </Link>
+          ))}
+
+          {/*  Login Button for desktop */}
+          <Link href="/auth">
+            <Button type="submit" variant="default" className="bg-neutral-800">
+              Log In
+            </Button>
+          </Link>
         </div>
+
+        {/* Mobile toggle */}
+        <button
+          className="md:hidden text-neutral-500 hover:text-neutral-900 transition-colors"
+          onClick={() => setIsOpen((v) => !v)}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+        >
+          {isOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
       </div>
-      {isHambergOn && (
-        <div className="bg-white md:hidden w-full flex flex-col gap-y-2 pt-4 px-5 overflow-hidden">
-          <button className="w-full flex flex-row items-center gap-x-4 text-left text-[#737373] hover:text-[#0a0a0a] transition-all duration-350 pl-2 py-2">
-            About
-          </button>
-          <button className="w-full flex flex-row items-center gap-x-4 text-left text-[#737373] hover:text-[#0a0a0a] transition-all duration-350 pl-2 py-2">
-            Features
-          </button>
-          <button
-            onClick={() => router.push("/login")}
-            className="w-full flex flex-row items-center gap-x-4 text-left text-[#737373] hover:text-[#0a0a0a] transition-all duration-350 pl-2 py-2"
-          >
-            Log In
-          </button>
+
+      {/* Mobile menu */}
+      {isOpen && (
+        <div className="md:hidden bg-white border border-t-0 border-gray-200 rounded-b-lg shadow-sm">
+          {NAV_LINKS.map(({ label, href }) => (
+            <Link
+              key={href}
+              href={href}
+              className="block px-6 py-3 text-sm text-neutral-500 hover:text-neutral-900 hover:bg-gray-50 transition-all"
+            >
+              {label}
+            </Link>
+          ))}
+          <div className="px-6 py-3">
+            <Link
+              href="/auth"
+              className="block text-center text-sm text-neutral-900 border border-gray-200 px-3 py-2 rounded-md hover:bg-neutral-900 hover:text-white transition-all duration-200"
+            >
+              Log In
+            </Link>
+          </div>
         </div>
       )}
     </nav>
   );
 };
+
 export default Navbar;
